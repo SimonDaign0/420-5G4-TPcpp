@@ -1,3 +1,5 @@
+# Author `Simon Daigneault`
+
 # Construire le projet
 
 Vous pouvez utiliser un dev container de base C++ de VScode.
