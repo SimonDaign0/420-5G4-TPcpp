@@ -1,8 +1,10 @@
 # Construire le projet
+
 Vous pouvez utiliser un dev container de base C++ de VScode.
 Le projet utilise cmake, pensez à l'inclure dans votre dev container.
 
 Voici les lignes de commandes pour compiler le projet:
+
 ```
 $ mkdir build
 $ cd build
