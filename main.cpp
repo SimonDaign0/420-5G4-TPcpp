@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cstring>
 #include <filesystem>
 #include <iostream>
 #include <limits>
@@ -133,6 +135,12 @@ int main(int argc, char *argv[]) {
       string title = getInput("Entrez le titre à rechercher : ");
       auto results = library.searchBooksByTitle(title);
 
+      // sorting
+      sort(results.begin(), results.end(), [](Book *a, Book *b) {
+        return a->getTitle().compare(b->getTitle()) < 0;
+      });
+      //
+
       if (results.empty()) {
         cout << "Aucun livre trouvé avec ce titre.\n";
       } else {
@@ -150,7 +158,11 @@ int main(int argc, char *argv[]) {
     case 4: { // Search by Author
       string author = getInput("Entrez l'auteur à rechercher : ");
       auto results = library.searchBooksByAuthor(author);
-
+      // sorting
+      sort(results.begin(), results.end(), [](Book *a, Book *b) {
+        return a->getAuthor().compare(b->getAuthor()) < 0;
+      });
+      //
       if (results.empty()) {
         cout << "Aucun livre trouvé de cet auteur.\n";
       } else {
