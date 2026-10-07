@@ -159,11 +159,11 @@ void Library::displayAllBooks() {
   cout << "\n=== TOUS LES LIVRES ===\n";
   for (size_t i = 0; i < books.size(); ++i) {
     cout << "\nLivre " << (i + 1) << " :\n";
-    cout << books[i]->toString() << "\n";
+    // cout << books[i]->toString() << "\n";
+    displayBookWithBorrower(*books[i]);
     cout << "-------------------------\n";
   }
 }
-
 // Display available books
 void Library::displayAvailableBooks() {
   auto available = getAvailableBooks();
@@ -205,4 +205,15 @@ int Library::getAvailableBookCount() const {
 }
 int Library::getCheckedOutBookCount() const {
   return getTotalBooks() - getAvailableBookCount();
+}
+
+void Library::displayBookWithBorrower(const Book &book) {
+  User *borrower = findUserById(book.getBorrowerId());
+  string username = (borrower != nullptr) ? borrower->getName() : "";
+  string statu_str = (book.getAvailability())
+                         ? "\nStatu : Disponible"
+                         : "\nStatu : Emprunté par : " + username;
+  cout << "Titre : " + book.getTitle() + "\nAuteur : " + book.getAuthor() +
+              "\nISBN : " + book.getISBN() + statu_str
+       << endl;
 }
