@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <cstring>
 #include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -10,6 +9,7 @@
 #include "library.h"
 
 using namespace std;
+namespace fs = std::filesystem;
 
 void clearScreen() { system("cls || clear"); }
 
@@ -78,10 +78,14 @@ int main(int argc, char *argv[]) {
       printUsage(argv[0]);
       return 1;
     }
-    booksFile = (filesystem::path(dataDir) / "books.txt").string();
-    usersFile = (filesystem::path(dataDir) / "users.txt").string();
-    logsFile = (filesystem::path(dataDir) / "journal.txt").string();
+  } else {
+    fs::create_directory("data");
+    dataDir = filesystem::path("data");
   }
+
+  booksFile = (filesystem::path(dataDir) / "books.txt").string();
+  usersFile = (filesystem::path(dataDir) / "users.txt").string();
+  logsFile = (filesystem::path(dataDir) / "journal.txt").string();
 
   Library library;
   FileManager fileManager(booksFile, usersFile, logsFile);
