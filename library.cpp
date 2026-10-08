@@ -8,19 +8,33 @@ using namespace std;
 // Constructor
 Library::Library() {}
 
+// Util
+string Library::getBorrowerName(const Book &book) {
+  User *borrower = findUserById(book.getBorrowerId());
+  string name = (borrower != nullptr) ? borrower->getName() : "";
+  return name;
+}
+
+string Library::formatBook(const Book &book) {
+  return book.getTitle() + '|' + book.getAuthor() + '|' + book.getISBN() + "|" +
+         ((book.getAvailability()) ? "1|" : ("0|" + getBorrowerName(book)));
+}
+
 // Add book to library
-void Library::addBook(const Book &book) {
+void Library::addBook(const Book &book, string &log) {
   books.push_back(make_unique<Book>(book));
+  log = "[AJOUT LIVRE] " + formatBook(book);
 }
 
 // Remove book from library
-bool Library::removeBook(const string &isbn) {
+bool Library::removeBook(const string &isbn, string &log) {
   auto it = find_if(books.begin(), books.end(),
                     [&isbn](const unique_ptr<Book> &book) {
                       return book->getISBN() == isbn;
                     });
 
   if (it != books.end()) {
+    log = "[SUPRESSION LIVRE] " + formatBook(*it->get());
     books.erase(it);
     return true;
   }
@@ -95,8 +109,9 @@ vector<Book *> Library::getAllBooks() {
 }
 
 // Add user to library
-void Library::addUser(const User &user) {
+void Library::addUser(const User &user, string &log) {
   users.push_back(make_unique<User>(user));
+  log = "[AJOUT UTILISATEUR] " + user.toFileFormat();
 }
 
 // Find user by ID
@@ -119,26 +134,29 @@ vector<User *> Library::getAllUsers() {
 }
 
 // Check out book
-bool Library::checkOutBook(const string &isbn, const string &userId) {
+bool Library::checkOutBook(const string &isbn, const string &userId,
+                           string &log) {
   Book *book = findBookByISBN(isbn);
   User *user = findUserById(userId);
 
   if (book && user && book->getAvailability()) {
     book->checkOut(user->getUserId());
     user->borrowBook(isbn);
+    log = "[EMPRUNT LIVRE] " + formatBook(*book);
     return true;
   }
   return false;
 }
 
 // Return book
-bool Library::returnBook(const string &isbn) {
+bool Library::returnBook(const string &isbn, string &log) {
   Book *book = findBookByISBN(isbn);
 
   if (book && !book->getAvailability()) {
     // Find the user who borrowed this book
     for (auto &user : users) {
       if (user->hasBorrowedBook(isbn)) {
+        log = "[RETOUR LIVRE] " + formatBook(*book);
         user->returnBook(isbn);
         break;
       }
@@ -208,11 +226,9 @@ int Library::getCheckedOutBookCount() const {
 }
 
 void Library::displayBookWithBorrower(const Book &book) {
-  User *borrower = findUserById(book.getBorrowerId());
-  string username = (borrower != nullptr) ? borrower->getName() : "";
   string statu_str = (book.getAvailability())
                          ? "\nStatu : Disponible"
-                         : "\nStatu : Emprunté par : " + username;
+                         : "\nStatu : Emprunté par : " + getBorrowerName(book);
   cout << "Titre : " + book.getTitle() + "\nAuteur : " + book.getAuthor() +
               "\nISBN : " + book.getISBN() + statu_str
        << endl;

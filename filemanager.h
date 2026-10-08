@@ -11,12 +11,15 @@ class FileManager {
 private:
   string booksFileName;
   string usersFileName;
+  string logsFileName;
 
 public:
   // Constructor
-  FileManager(const string &booksFile, const string &usersFile);
+  FileManager(const string &booksFile, const string &usersFile,
+              const string &logsFile);
 
   // File operations
+  bool saveLogToFile(const string &log);
   bool saveLibraryData(Library &library);
   bool loadLibraryData(Library &library);
 

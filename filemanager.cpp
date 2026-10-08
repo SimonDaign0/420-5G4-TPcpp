@@ -1,13 +1,33 @@
 #include "filemanager.h"
 #include <filesystem>
 #include <fstream>
+#include <ios>
 #include <iostream>
 
 using namespace std;
 
 // Constructor
-FileManager::FileManager(const string &booksFile, const string &usersFile)
-    : booksFileName(booksFile), usersFileName(usersFile) {}
+FileManager::FileManager(const string &booksFile, const string &usersFile,
+                         const string &logsFile)
+    : booksFileName(booksFile), usersFileName(usersFile),
+      logsFileName(logsFile) {}
+
+bool FileManager::saveLogToFile(const string &log) {
+  ofstream file(logsFileName, ios_base::app);
+  if (!file.is_open()) {
+    cout << "Erreur : Impossible d'ouvrir " << logsFileName
+         << " en écriture.\n";
+    return false;
+  }
+  auto now = chrono::system_clock::now();
+  time_t time_now = chrono::system_clock::to_time_t(now);
+  tm *local_time = localtime(&time_now);
+
+  file << put_time(local_time, "%Y-%m-%d %H:%M:%S - ") << log << "\n";
+
+  file.close();
+  return true;
+}
 
 // Save all library data
 bool FileManager::saveLibraryData(Library &library) {
@@ -73,7 +93,9 @@ bool FileManager::loadBooksFromFile(Library &library) {
     if (!line.empty()) {
       Book book;
       book.fromFileFormat(line);
-      library.addBook(book);
+      string log;
+      library.addBook(book, log);
+      // saveLogToFile(log);
       count++;
     }
   }
@@ -98,7 +120,9 @@ bool FileManager::loadUsersFromFile(Library &library) {
     if (!line.empty()) {
       User user;
       user.fromFileFormat(line);
-      library.addUser(user);
+      string log;
+      library.addUser(user, log);
+      // saveLogToFile(log);
       count++;
     }
   }
