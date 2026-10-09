@@ -1,4 +1,4 @@
-# Author `Simon Daigneault`
+# Author `Simon Daigneault (2238563)`
 
 # Construire le projet
 
